@@ -1,1 +1,2 @@
-#
+# ZenGrove - your meditation grove
+
