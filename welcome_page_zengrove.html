@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Welcome to ZenGrove</title>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="styling_zengrove.css">
+        <link href='https://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet'>
+        <style>
+            .navbar a, #goalNavBar {
+                padding: 0 30px;
+                font-size: 24px;
+                color: #32696D;
+            }
+
+            .navbar #goalNavBar {
+                font-size: 24px;
+                color: #32696D;
+                display: flex;
+                align-items: center; /* Align items vertically */
+            }
+
+            .navbar a:hover {
+                text-decoration: underline;
+                font-weight: 900;
+            }
+            
+            #progressTitle{
+                padding: 10px 10px;
+                margin: 0;
+            }
+
+            .progress {
+                width: 100px;
+                height: 35px;
+                background-color: #32696D;
+                border-radius: 20px;
+                padding: 5px;
+                margin-left: auto;
+            }
+
+            .progress-bar {
+                width: 30%;
+                height: 100%;
+                background-color: #99C2C5;
+                text-align: center;
+                color: #32696D;
+                border-radius: 20px;
+            }
+            
+            #welcomeDiv {
+                background-color: #32696D;
+                color: #99C2C5;
+                font-size: 40px;
+                padding: 10px;
+                /* top right bottom left */
+                margin: 0px 10px 40px 10px;
+                border-radius: 20px;
+                height: 20vh;
+                display: grid;
+                place-items: center;
+            }
+
+            #logInButton, #signUpButton {
+                padding: 20px;
+                /* Top-bottom right-left */
+                margin: 20px 30%;
+                background-color: #ccc;
+                border-radius: 20px;
+                height: 13vh;
+                background-color: #32696D;
+                color: #99C2C5;
+                display: grid;
+                place-items: center;
+                &:hover{
+                    cursor: pointer;
+                    box-shadow: 5px 10px 8px #064348;
+                    background-color: #99C2C5;
+                    color: #32696D;
+                    border: 2px solid #32696D;
+                }
+                transition: 0.3s background-color;
+            }
+
+            #mainBody {
+                padding: 30px;
+                text-align: center;
+                vertical-align: center;
+                
+            }
+
+            #leftDiv{
+                background-color: #32696D;
+                margin:0 20px;
+                height: 100%;
+                border-radius: 20px;
+                color: #99C2C5;
+                display: grid;
+                place-items: center;
+                font-weight: 600;
+            }
+
+            #rightDiv {
+                margin-top: 10px;
+                font-weight: 900;
+            }
+
+            #rightDiv > p {
+                font-size: 20px;
+                color: #32696D;
+                font-weight: 400;
+            }
+
+            .modal-content {
+                background-color: #32696D; /* Example background color */
+                border: 2px solid #99C2C5;
+                color: #99C2C5;
+            }
+
+            /* Customize input fields */
+            .modal-body input[type="text"],
+            .modal-body input[type="password"],
+            .modal-body input[type="email"],
+            .modal-body button[type="submit"] {
+                background-color: #99C2C5; /* Example input background color */
+                color: #000000; /* Example text color */
+                border: 1px solid #99C2C5;
+            }
+
+            .close::before {
+                content: "";
+                position: absolute;
+                top: 19px;
+                right: 12px;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background-color: #99C2C5;
+                z-index: -1; 
+            }
+
+            .close {
+                color: #32696D; 
+                box-shadow: none;
+            }
+
+            #login, #signUp{
+                background-color: #32696D; /* Example background color */
+                border: 2px solid #99C2C5;
+                color: #99C2C5;
+            }
+
+            #login:hover, #signUp:hover{
+                background-color: #99C2C5; /* Example background color */
+                border: 2px solid #99C2C5;
+                color: #32696D;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="navbar navbar-expand-lg">
+            <img src='ZenGroveLogo.png' id='zenGroveLogo' width="200px">
+            <a class="navbar-brand" href="#">Home</a>
+            <a class="navbar-brand" href="#">My ZenMates</a>
+            <a class="navbar-brand" href="#">My Profile</a>
+            <div class="ml-auto" id='goalNavBar'>
+                <p id='progressTitle'>My Daily Progress</p>
+                <div class="progress">
+                    <div class="progress-bar">??%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Using Bootstrap -->
+        <div class="container-fluid" id='mainBody'>
+            <div class="row">
+                <div class="col-md-4">
+                    <div id="leftDiv">
+                        <br>
+                        <img src="ZenKo.png" width="60%">
+                        <p>
+                            Meditate <br>
+                            Build a ZenCommunity <br>
+                            Win ZenMedals <br>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div id="rightDiv">
+                        <div id="welcomeDiv">Welcome to ZenGrove</div>
+                        <p> Already have an account? </p>
+                        <div id="logInButton">LOG IN</div>
+                        <p> New to ZenGrove? Create a new account! </p>
+                        <div id="signUpButton">SIGN UP</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- Login Modal -->
+        <div class="modal fade" id="loginModal" aria-labelledby="loginModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Login</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                <!-- Login form goes here -->
+                <form>
+                    <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" id="username" placeholder="Enter your username">
+                    </div>
+                    <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="Enter your password">
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="login">Login</button>
+                </form>
+                </div>
+            </div>
+            </div>
+        </div>
+        
+        <script>
+            $("#logInButton").click(function (){
+                $('#loginModal').modal('show');
+            })
+        </script>
+
+        <!-- Sign Up Modal -->
+        <div class="modal fade" id="signupModal" tabindex="-1" role="dialog" aria-labelledby="signupModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="signupModalLabel">Sign Up</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                <!-- Sign up form goes here -->
+                <form>
+                    <div class="form-group">
+                    <label for="newUsername">Username</label>
+                    <input type="text" class="form-control" id="newUsername" placeholder="Enter a new username">
+                    </div>
+                    <div class="form-group">
+                    <label for="newPassword">Password</label>
+                    <input type="password" class="form-control" id="newPassword" placeholder="Enter a new password">
+                    </div>
+                    <button type="submit" id="signUp" class="btn btn-primary">Sign Up</button>
+                </form>
+                </div>
+            </div>
+            </div>
+        </div>
+        
+        <script>
+            $("#signUpButton").click(function (){
+                $('#signupModal').modal('show');
+            })
+        </script>
+
+    </body>
+</html>
