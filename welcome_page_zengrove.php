@@ -9,48 +9,14 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="styling_zengrove.css">
         <link href='https://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet'>
-        <style>
-            .navbar a, #goalNavBar {
-                padding: 0 30px;
-                font-size: 24px;
-                color: #32696D;
-            }
-
-            .navbar #goalNavBar {
-                font-size: 24px;
-                color: #32696D;
-                display: flex;
-                align-items: center; /* Align items vertically */
-            }
-
-            .navbar a:hover {
-                text-decoration: underline;
-                font-weight: 900;
-            }
-            
-            #progressTitle{
-                padding: 10px 10px;
-                margin: 0;
-            }
-
-            .progress {
-                width: 100px;
-                height: 35px;
-                background-color: #32696D;
-                border-radius: 20px;
-                padding: 5px;
-                margin-left: auto;
-            }
-
-            .progress-bar {
-                width: 30%;
-                height: 100%;
-                background-color: #99C2C5;
+        <style> 
+            #mainBody {
+                padding: 30px;
                 text-align: center;
-                color: #32696D;
-                border-radius: 20px;
+                vertical-align: center;
+                height: 100vh;
             }
-            
+
             #welcomeDiv {
                 background-color: #32696D;
                 color: #99C2C5;
@@ -59,7 +25,7 @@
                 /* top right bottom left */
                 margin: 0px 10px 40px 10px;
                 border-radius: 20px;
-                height: 20vh;
+                height: 25vh;
                 display: grid;
                 place-items: center;
             }
@@ -70,7 +36,7 @@
                 margin: 20px 30%;
                 background-color: #ccc;
                 border-radius: 20px;
-                height: 13vh;
+                height: 15vh;
                 background-color: #32696D;
                 color: #99C2C5;
                 display: grid;
@@ -85,17 +51,11 @@
                 transition: 0.3s background-color;
             }
 
-            #mainBody {
-                padding: 30px;
-                text-align: center;
-                vertical-align: center;
-                
-            }
 
             #leftDiv{
                 background-color: #32696D;
                 margin:0 20px;
-                height: 100%;
+                height: 90vh;
                 border-radius: 20px;
                 color: #99C2C5;
                 display: grid;
@@ -162,20 +122,6 @@
         </style>
     </head>
     <body>
-        <div class="navbar navbar-expand-lg">
-            <img src='ZenGroveLogo.png' id='zenGroveLogo' width="200px">
-            <a class="navbar-brand" href="#">Home</a>
-            <a class="navbar-brand" href="#">My ZenMates</a>
-            <a class="navbar-brand" href="#">My Profile</a>
-            <div class="ml-auto" id='goalNavBar'>
-                <p id='progressTitle'>My Daily Progress</p>
-                <div class="progress">
-                    <div class="progress-bar">??%</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Using Bootstrap -->
         <div class="container-fluid" id='mainBody'>
             <div class="row">
                 <div class="col-md-4">
@@ -213,14 +159,16 @@
                 </div>
                 <div class="modal-body">
                 <!-- Login form goes here -->
-                <form>
+                <form action="controller_zengrove.php" method="POST">
                     <div class="form-group">
+                    <input type="hidden" name="Page" value="WelcomePage">
+                    <input type="hidden" name="Command" value="LogIn">
                     <label for="username">Username</label>
-                    <input type="text" class="form-control" id="username" placeholder="Enter your username">
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username">
                     </div>
                     <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" class="form-control" id="password" placeholder="Enter your password">
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password">
                     </div>
                     <button type="submit" class="btn btn-primary" id="login">Login</button>
                 </form>
@@ -247,14 +195,20 @@
                 </div>
                 <div class="modal-body">
                 <!-- Sign up form goes here -->
-                <form>
+                <form action="controller_zengrove.php" method="POST">
                     <div class="form-group">
-                    <label for="newUsername">Username</label>
-                    <input type="text" class="form-control" id="newUsername" placeholder="Enter a new username">
+                        <input type="hidden" name="Page" value="WelcomePage">
+                        <input type="hidden" name="Command" value="SignUp">
+                        <label for="signUpUsername">Username</label>
+                        <input type="text" class="form-control" id="signUpUsername" name="username" placeholder="Enter a username">
                     </div>
                     <div class="form-group">
-                    <label for="newPassword">Password</label>
-                    <input type="password" class="form-control" id="newPassword" placeholder="Enter a new password">
+                        <label for="SignUpPassword">Password</label>
+                        <input type="password" class="form-control" id="SignUpPassword" name="password" placeholder="Enter a password">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email">
                     </div>
                     <button type="submit" id="signUp" class="btn btn-primary">Sign Up</button>
                 </form>

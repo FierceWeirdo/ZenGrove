@@ -10,29 +10,6 @@
         <link rel="stylesheet" href="styling_zengrove.css">
         <link href='https://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet'>
         <style>
-            .navbar a, #goalNavBar {
-                padding: 0 30px;
-                font-size: 24px;
-                color: #32696D;
-            }
-
-            .navbar #goalNavBar {
-                font-size: 24px;
-                color: #32696D;
-                display: flex;
-                align-items: center; /* Align items vertically */
-            }
-
-            .navbar a:hover {
-                text-decoration: underline;
-                font-weight: 900;
-            }
-            
-            #progressTitle{
-                padding: 10px 10px;
-                margin: 0;
-            }
-
             .progress {
                 width: 100px;
                 height: 35px;
@@ -43,14 +20,12 @@
             }
 
             .progress-bar {
-                width: 30%;
                 height: 100%;
                 background-color: #99C2C5;
                 text-align: center;
                 color: #32696D;
                 border-radius: 20px;
             }
-
             #mainBody {
                 margin: 20px 100px;
                 padding: 30px;
@@ -183,19 +158,6 @@
         </style>
     </head>
     <body>
-        <div class="navbar navbar-expand-lg">
-            <img src='ZenGroveLogo.png' id='zenGroveLogo' width="200px">
-            <a class="navbar-brand" href="#">Home</a>
-            <a class="navbar-brand" href="#">My ZenMates</a>
-            <a class="navbar-brand" href="#">My Profile</a>
-            <div class="ml-auto" id='goalNavBar'>
-                <p id='progressTitle'>My Daily Progress</p>
-                <div class="progress">
-                    <div class="progress-bar">??%</div>
-                </div>
-            </div>
-        </div>
-
         <div id="mainBody">
             <p id="bodyHeading">My Profile</p>
             <div class="container" id = >
