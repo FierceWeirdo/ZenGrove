@@ -126,7 +126,7 @@
         </style>
     </head>
     <body>
-        <div class="container">
+        <div class="container-fluid">
             <div id="centerDiv" class="row">
                 <div class="col">
                     <img class="img-responsive zenko" src="ZenKo.png">
@@ -135,11 +135,11 @@
                     <div class="circle">
                         <p id="startTimer" class="text-center">START</p> 
                         <script>
-                            let timer;
-                            let startTime;
-                            let rainCounter = false;
-                            let birdCounter = false;
-                            let fireCounter = false;
+                            var timer;
+                            var startTime;
+                            var rainCounter = false;
+                            var birdCounter = false;
+                            var fireCounter = false;
                             $('.circle').click(function() {
                                 if (!timer) {
                                     let audio1 = $('#rainAudio')[0]; 

@@ -107,4 +107,12 @@ function updateDailyProgress($id, $value){
     $result = mysqli_query($conn, $sql);
     return $result;
 }
+
+function getUserId($username){
+    global $conn;
+    $sql = "SELECT Id FROM ZenGroveUsers WHERE Username='$username'";
+    $result = mysqli_query($conn, $sql);
+    return mysqli_fetch_assoc($result);
+}
+
 ?>
