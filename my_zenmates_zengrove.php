@@ -218,7 +218,11 @@
             }
 
             #friendListTable tr td{
+                border-radius: 20px;
                 border-top: none !important;
+                &:hover{
+                    background-color: rgba(26, 33, 43, 0.2);
+                }
             }
             #friendListTable tr:hover {
                 cursor: pointer !important;
@@ -305,9 +309,9 @@
                                 </div>
                             </div>
                             <div id="friendProfileDiv">
-                                <p>Entered ZenGrove: </p>
-                                <p>Daily Meditation Goal: </p>
-                                <p>Total ZenMedals of Achievement: </p>
+                                <p>Entered ZenGrove:  <span id="enterDate"></span> </p>
+                                <p>Daily Meditation Goal:  <span id="dailyGoal"></span> </p>
+                                <p>Total ZenMedals of Achievement: <span id="zenMedals"></span> <img src="ZenMedal.png" width=20px> </p> 
                             </div>
                         </div>
                     </div>
@@ -327,6 +331,7 @@
                         },
                         success: function(response ) {
                             $('#friendListTable').html(response);
+                            $('#usernameHeader').html($('#friendsList tr:first-of-type').text());
                         },
                         error: function(xhr, status, error) {
                             console.error('Error fetching data:', error);
@@ -338,6 +343,7 @@
                         $('#messageOrProfileButton').html('Message');
                         $('#messagingDiv').css('display', 'none');
                         $('#friendProfileDiv').css('display', 'block');
+                        getUserInformation();
                     }
                     else {
                         $('#messageOrProfileButton').html('View Profile');
@@ -345,7 +351,57 @@
                         $('#friendProfileDiv').css('display', 'none');
                     }
                 });
+
+                $(document).on('click', '#friendsList tr td', function() {
+                    $('#usernameHeader').html($(this).text());
+                    getUserInformation();
+                });
+
+                function getUserInformation(){
+                    $.ajax({
+                        url: 'controller_zengrove.php',
+                        type: 'POST',
+                        data: {
+                            Page: 'MyZenMates',
+                            Command: 'GetUserProfile',
+                            Username: $('#usernameHeader').text()
+                        },
+                        success: function(response ) {
+                            var data = JSON.parse(response);
+                            $('#enterDate').html(formatDate(data.enterDate));
+                            $('#dailyGoal').html(data.dailyGoal + ' minutes');
+                            $('#zenMedals').html(data.zenMedals);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error fetching data:', error);
+                        }
+                    });
+                }
             </script>
+
+
+<script>
+    function formatDate(inputDate) {
+    // Extract year, month, and day from the input string
+    const year = inputDate.substring(0, 4);
+    const month = inputDate.substring(4, 6);
+    const day = inputDate.substring(6, 8);
+
+    // Create a new Date object with extracted components
+    const formattedDate = new Date(`${year}-${month}-${day}`);
+
+    // Define months array to get the name of the month
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    // Get the month name
+    const monthName = months[formattedDate.getMonth()];
+
+    // Format the output string
+    const output = `${day} ${monthName} ${year}`;
+
+    return output;
+}
+    </script>
          </div>
     </body>
 </html>

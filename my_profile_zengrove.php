@@ -43,7 +43,7 @@
                 font-weight: 900;
             }
 
-            #deleteProfile, #logOutButton{
+            #deleteProfile, #logOutButton, #changePasswordButton{
                 width: max-content;
                 padding-left: 20px;
                 padding-right: 20px;
@@ -203,6 +203,10 @@
                 <div class="col-sm-2 profileValueChangeButtons" id="deleteProfile">
                     Delete Profile
                 </div>
+
+                <div class="col-sm-2 profileValueChangeButtons" id="changePasswordButton">
+                    Change Password
+                </div>
             </div>
             <form action = 'controller_zengrove.php' method='POST' id='logOutForm'>
                 <input type = 'hidden' name='Page' value='MyProfile'>
@@ -224,6 +228,9 @@
         </script>
         <div class="modal fade" id="deleteProfileModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
+            <form action="controller_zengrove.php" method="POST">
+                <input type="hidden" name="Page" value="MyProfile">
+                    <input type="hidden" name="Command" value="DeleteProfile">
                 <div class="modal-content">
                     <div class="modal-header">
                     <h5 class="modal-title" id="deleteModalLabel">Delete Account</h5>
@@ -236,9 +243,10 @@
                     </div>
                     <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger">Delete</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
                     </div>
                 </div>
+        </form>
             </div>
         </div>
 
@@ -323,7 +331,7 @@
 
                                 // Update HTML elements with the retrieved values
                                 document.getElementById('username').innerText = data.username;
-                                document.getElementById('dailyGoal').innerText = data.daily_goal;
+                                document.getElementById('dailyGoal').innerText = data.daily_goal + ' minutes';
                                 document.getElementById('zenMedals').innerText = data.zen_medals;
                             } else {
                                 console.error('Error fetching user profile. Status:', xhr.status);

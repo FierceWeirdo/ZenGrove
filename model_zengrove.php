@@ -155,7 +155,7 @@ function getUserId($username){
     global $conn;
     $sql = "SELECT Id FROM ZenGroveUsers WHERE Username='$username'";
     $result = mysqli_query($conn, $sql);
-    return mysqli_fetch_assoc($result);
+    return mysqli_fetch_assoc($result)['Id'];
 }
 
 function updateZenMedals($id){
@@ -179,5 +179,10 @@ function checkUserActivityDate($id){
     }
 }
 
-
+function deleteUserProfile($id){
+    global $conn;
+    $sql = "DELETE FROM ZenGroveUsers WHERE Id=$id";
+    $result = mysqli_query($conn, $sql);
+    return $result;
+}
 ?>
