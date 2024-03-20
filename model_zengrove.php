@@ -101,11 +101,29 @@ function getUserProfile($id){
     return mysqli_fetch_assoc($result);
 }
 
-function updateDailyProgress($id, $value){
+function updateDailyProgress($id, $timeSpentMeditating){
     global $conn;
-    $sql = "UPDATE ZenGroveUsers SET DailyProgress = $value WHERE Id=$id";
-    $result = mysqli_query($conn, $sql);
-    return $result;
+    $dailyProgress = getUserProfile($id)['DailyProgress'];
+    if ($dailyProgress !=100) {
+        $dailyGoal = getUserProfile($id)['DailyGoal'];
+        $value = ($timeSpentMeditating / $dailyGoal) * 100;
+        $value += $dailyProgress;
+        if ($value>=100){
+            $sql = "UPDATE ZenGroveUsers SET DailyProgress = 100 WHERE Id=$id";
+            $result = mysqli_query($conn, $sql);
+            updateZenMedals($id);
+            return $result;
+        }
+        else{
+            $sql = "UPDATE ZenGroveUsers SET DailyProgress= $value WHERE Id=$id";
+            $result = mysqli_query($conn, $sql);
+            return $result;
+        }
+        
+    }
+    else {
+        return true;
+    }
 }
 
 function getUserId($username){
@@ -115,4 +133,10 @@ function getUserId($username){
     return mysqli_fetch_assoc($result);
 }
 
+function updateZenMedals($id){
+    global $conn;
+    $sql = "UPDATE ZenGroveUsers SET ZenMedals= ZenMedals + 1 WHERE Id=$id";
+    $result = mysqli_query($conn, $sql);
+    return $result;
+}
 ?>

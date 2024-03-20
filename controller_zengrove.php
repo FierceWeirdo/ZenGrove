@@ -99,6 +99,22 @@ else{
                     include('main_page_zengrove.php');
                     break;
         }
+    }
+    else if ($page == 'MainPage'){
+        switch($command){
+            case 'GetDailyProgress':
+                $id = $_SESSION['UserId'];
+                $progress = getUserProfile($id)['DailyProgress'];
+                echo $progress;
+                break;
+            case 'UpdateDailyProgress':
+                $id = $_SESSION['UserId'];
+                $time = $_POST['TimeSpentMeditating'];
+                updateDailyProgress($id, $time);
+                $progress = getUserProfile($id)['DailyProgress'];
+                echo $progress;
+                break;
+        }
     }  
 }
 
