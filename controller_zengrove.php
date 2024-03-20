@@ -91,20 +91,32 @@ else{
                     include('main_page_zengrove.php');
                 }
                 break;
-                case 'ChangeDailyGoal':
-                    $id = $_SESSION['UserId'];
-                    $newDailyGoal = $_POST['newDailyGoal'];
-                    updateDailyGoal($id, $newDailyGoal);
-                    echo "<script>alert('Daily Goal updated!');</script>";
-                    include('main_page_zengrove.php');
-                    break;
+            case 'ChangeDailyGoal':
+                $id = $_SESSION['UserId'];
+                $newDailyGoal = $_POST['newDailyGoal'];
+                updateDailyGoal($id, $newDailyGoal);
+                echo "<script>alert('Daily Goal updated!');</script>";
+                include('main_page_zengrove.php');
+                break;
+            case 'LogOut':
+                session_unset();
+                session_destroy();
+                include('welcome_page_zengrove.php');
+                break;
         }
     }
     else if ($page == 'MainPage'){
         switch($command){
             case 'GetDailyProgress':
                 $id = $_SESSION['UserId'];
-                $progress = getUserProfile($id)['DailyProgress'];
+                $lastMeditatedTodayBool = checkUserActivityDate($id);
+                if($lastMeditatedTodayBool){
+                    $progress = getUserProfile($id)['DailyProgress'];
+                } else {
+                    $progress = 0;
+                    updateDailyProgress($id, 0);
+                }
+
                 echo $progress;
                 break;
             case 'UpdateDailyProgress':
@@ -115,7 +127,26 @@ else{
                 echo $progress;
                 break;
         }
-    }  
+    }
+    else if($page == 'MyZenMates'){
+        switch ($command){
+            case 'GetAllZenMates':
+                $id = $_SESSION['UserId'];
+                $arrayOfZenMates = getAllZenMatesUsernames($id);
+                if (!empty($arrayOfZenMates)) {
+                    $str = '';
+                    foreach ($arrayOfZenMates as $zenMate) {
+                        $str .= "<tr><td>$zenMate</td></tr>";
+                    }
+                    echo $str;
+                } else {
+                    echo "No Zen Mates found";
+                }
+                break;
+            case 'GetUserProfile':
+                break;
+        }
+    }
 }
 
 ?>

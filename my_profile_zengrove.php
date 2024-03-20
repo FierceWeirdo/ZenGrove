@@ -43,15 +43,14 @@
                 font-weight: 900;
             }
 
-            #deleteProfile{
+            #deleteProfile, #logOutButton{
                 width: max-content;
-                position: absolute;
-                bottom: 30px;
-                left: 30px;
                 padding-left: 20px;
                 padding-right: 20px;
+                margin: 20px;
             }
-
+            
+            
             .profileValueDisplays{
                 width: 100%;
                 padding: 10px 15px;
@@ -196,9 +195,24 @@
                 </div>
             </div>
 
-            <div class="profileValueChangeButtons" id="deleteProfile">
-                Delete Profile
+            <div class = "row logOutAndDelete">
+                <div class="col-sm-2 profileValueChangeButtons" id="logOutButton">
+                    Log Out
+                </div>
+
+                <div class="col-sm-2 profileValueChangeButtons" id="deleteProfile">
+                    Delete Profile
+                </div>
             </div>
+            <form action = 'controller_zengrove.php' method='POST' id='logOutForm'>
+                <input type = 'hidden' name='Page' value='MyProfile'>
+                <input type = 'hidden' name='Command' value='LogOut'>
+            </form>
+            <script>
+                $('#logOutButton').click(function() {
+                    $('#logOutForm').submit();
+                });
+            </script>
 
             <img src="ZenKo.png" width = 180px id="zenKo">
 

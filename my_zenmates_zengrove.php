@@ -213,15 +213,15 @@
                 display: none;
             }
 
-            #friendListTable tbody{
+            #friendListTable {
                 width: 100%;
             }
 
-            #friendListTable tbody tr td{
-                border-top: none;
+            #friendListTable tr td{
+                border-top: none !important;
             }
-            #friendListTable tbody tr:hover {
-                cursor: pointer;
+            #friendListTable tr:hover {
+                cursor: pointer !important;
             }
       
         </style>
@@ -245,33 +245,6 @@
                         <div id="friendsList">
                             <div class="container-fluid">          
                                 <table class="table table-hover" id="friendListTable">
-                                    <tr>
-                                      <td>John</td>
-                                    </tr>
-                                    <tr>
-                                      <td>Mary</td>
-                                    </tr>
-                                    <tr>
-                                      <td>July</td>
-                                    </tr>
-                                    <tr>
-                                        <td>John</td>
-                                      </tr>
-                                      <tr>
-                                        <td>Mary</td>
-                                      </tr>
-                                      <tr>
-                                        <td>July</td>
-                                      </tr>
-                                      <tr>
-                                        <td>John</td>
-                                      </tr>
-                                      <tr>
-                                        <td>Mary</td>
-                                      </tr>
-                                      <tr>
-                                        <td>July</td>
-                                      </tr>
                                     
                                 </table>
                             </div>
@@ -290,7 +263,7 @@
                             <div id="messagingDiv" class="container">
                                 <div id="chatHistory" class="col-sm-12">
                                     <div class="container-fluid">          
-                                        <table class="table table-hover" id="friendListTable">
+                                        <table class="table table-hover" id="friendMessagingList">
                                             <tr>
                                               <td>John</td>
                                             </tr>
@@ -336,29 +309,43 @@
                                 <p>Daily Meditation Goal: </p>
                                 <p>Total ZenMedals of Achievement: </p>
                             </div>
-                            <script>
-                                $(document).ready(function(){
-                                    $('#messageOrProfileButton').html('View Profile');
-                                });
-                                $('#messageOrProfileButton').click(function(){
-                                    if($('#messageOrProfileButton').html() == 'View Profile'){
-                                        $('#messageOrProfileButton').html('Message');
-                                        $('#messagingDiv').css('display', 'none');
-                                        $('#friendProfileDiv').css('display', 'block');
-                                    }
-                                    else {
-                                        $('#messageOrProfileButton').html('View Profile');
-                                        $('#messagingDiv').css('display', 'block');
-                                        $('#friendProfileDiv').css('display', 'none');
-                                    }
-                                });
-                            </script>
                         </div>
                     </div>
                 </div>
             </div>
             
-            
+            <script>
+                $(document).ready(function(){
+                    $('#messageOrProfileButton').html('View Profile');
+
+                    $.ajax({
+                        url: 'controller_zengrove.php',
+                        type: 'POST',
+                        data: {
+                            Page: 'MyZenMates',
+                            Command: 'GetAllZenMates'
+                        },
+                        success: function(response ) {
+                            $('#friendListTable').html(response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error fetching data:', error);
+                        }
+                    });
+                });
+                $('#messageOrProfileButton').click(function(){
+                    if($('#messageOrProfileButton').html() == 'View Profile'){
+                        $('#messageOrProfileButton').html('Message');
+                        $('#messagingDiv').css('display', 'none');
+                        $('#friendProfileDiv').css('display', 'block');
+                    }
+                    else {
+                        $('#messageOrProfileButton').html('View Profile');
+                        $('#messagingDiv').css('display', 'block');
+                        $('#friendProfileDiv').css('display', 'none');
+                    }
+                });
+            </script>
          </div>
     </body>
 </html>

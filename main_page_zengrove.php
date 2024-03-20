@@ -87,6 +87,11 @@
                 $.post('controller_zengrove.php', postQuery, function(response) {
                     $('.progress-bar').css('width', response);
                     $('.progress-bar').html(response + '%');
+
+                    if ($('.progress-bar').html() == '100%') {
+                    $('.progress-bar').css('background-color', '#355938');
+                    $('.progress-bar').css('color', '#eee');
+                }
                 });
 
             });
@@ -106,7 +111,7 @@
                 handleButtonClick.call(this);
             });
 
-            
+
         </script>
         <div id="mainDiv">
 
