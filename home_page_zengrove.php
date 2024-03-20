@@ -126,7 +126,7 @@
         </style>
     </head>
     <body>
-        <div class="container">
+        <div class="container-fluid">
             <div id="centerDiv" class="row">
                 <div class="col">
                     <img class="img-responsive zenko" src="ZenKo.png">
@@ -135,17 +135,21 @@
                     <div class="circle">
                         <p id="startTimer" class="text-center">START</p> 
                         <script>
-                            let timer;
-                            let startTime;
-                            let rainCounter = false;
-                            let birdCounter = false;
-                            let fireCounter = false;
+                            var timer;
+                            var startTime;
+                            var elapsedTime = 0.0;
+                            var rainCounter = false;
+                            var birdCounter = false;
+                            var fireCounter = false;
                             $('.circle').click(function() {
                                 if (!timer) {
                                     let audio1 = $('#rainAudio')[0]; 
                                     let audio2 = $('#birdAudio')[0]; 
                                     let audio3 = $('#fireAudio')[0];
                                     startTime = Date.now();
+                                    console.log(startTime);
+                                    elapsedTime = 0.0;
+                                    console.log(elapsedTime);
                                     timer = setInterval(updateTimer, 1000);
                                     if(rainCounter) {
                                         $('#rainSpeakerButton').css('visibility','visible');
@@ -166,6 +170,20 @@
                                     let audio3 = $('#fireAudio')[0];
                                     clearInterval(timer);
                                     timer = null;
+                                    
+                                    elapsedTime = ((Date.now() - startTime) / 1000 / 60); //storing in minutes
+                                    console.log(elapsedTime);
+                                    var postQuery = {
+                                        Page: 'MainPage',
+                                        Command: 'UpdateDailyProgress',
+                                        TimeSpentMeditating:elapsedTime
+                                    };
+
+                                    $.post('controller_zengrove.php', postQuery, function(response) {
+                                        $('.progress-bar').css('width', response);
+                                        $('.progress-bar').html(response + '%');
+                                    });
+
                                     if(rainCounter) {
                                         $('#rainSpeakerButton').css('visibility','hidden');
                                         audio1.pause();

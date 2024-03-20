@@ -42,7 +42,6 @@
             }
 
             .progress-bar {
-                width: 30%;
                 height: 100%;
                 background-color: #99C2C5;
                 text-align: center;
@@ -77,9 +76,19 @@
                     Command: 'ShowHomePage'
                 };
                 $.post('controller_zengrove.php', postQuery, function(response) {
-                    console.log(postQuery);
                     $('#mainDiv').html(response);
                 });
+
+                var postQuery = {
+                    Page: 'MainPage',
+                    Command: 'GetDailyProgress'
+                };
+
+                $.post('controller_zengrove.php', postQuery, function(response) {
+                    $('.progress-bar').css('width', response);
+                    $('.progress-bar').html(response + '%');
+                });
+
             });
             function handleButtonClick(page) {
                 if(!page){
@@ -90,13 +99,14 @@
                     Command: page
                 };
                 $.post('controller_zengrove.php', postQuery, function(response) {
-                    console.log(postQuery);
                     $('#mainDiv').html(response);
                 });
             }
             $('.header-button').click(function() {
                 handleButtonClick.call(this);
             });
+
+            
         </script>
         <div id="mainDiv">
 

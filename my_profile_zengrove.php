@@ -164,7 +164,7 @@
                 <div class = "row">
                     <div class="col-sm-4">
                         <div class = 'profileValueDisplays'>
-                            Username: <p id="'username" class="userValues">ZenRhythm</p>
+                            Username: <span id='username' class="userValues"></span>
                         </div>
                     </div>
                     <div class="col-sm-3">
@@ -177,7 +177,7 @@
                 <div class = "row">
                     <div class="col-sm-4">
                         <div class="profileValueDisplays">
-                            Daily Goal:  <p id="dailyGoalTime" class="userValues">30 minutes</p>
+                            Daily Goal: <span id='dailyGoal' class="userValues"></span>
                         </div>
                     </div>
                     <div class="col-sm-3">
@@ -190,7 +190,7 @@
                 <div class = "row">
                     <div class="col-sm-5">
                         <div class="profileValueDisplays">
-                            Total Medals of Achievement:  <p id="zenMedals" class="userValues">12</p> <img src="ZenMedal.png" width=20px>
+                            Total Medals of Achievement: <span id='zenMedals' class="userValues"></span> <img src="ZenMedal.png" width=20px>
                         </div>
                     </div>
                 </div>
@@ -201,13 +201,6 @@
             </div>
 
             <img src="ZenKo.png" width = 180px id="zenKo">
-
-            <script>
-                document.addEventListener('load', function(){
-                    
-                })
-            </script>
-        </div>
 
         <!-- Delete Profile Modal -->
         <script>
@@ -250,18 +243,20 @@
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
-                <div class="modal-body">
-                  <form id="changeUsernameForm">
-                    <div class="form-group">
-                      <label for="newUsername">New Username:</label>
-                      <input type="text" class="form-control" id="newUsername" placeholder="Enter new username">
+                <form action="controller_zengrove.php" method="POST">
+                    <div class="modal-body">
+                        <div class="form-group">
+                        <input type="hidden" name="Page" value="MyProfile">
+                        <input type="hidden" name="Command" value="ChangeUsername">
+                        <label for="newUsername">New Username:</label>
+                        <input type="text" class="form-control" id="newUsername" name='newUsername' placeholder="Enter new username">
+                        </div>
+                    </div> 
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
-                  </form>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                  <button type="button" class="btn btn-primary" onclick="submitNewUsername()">Submit</button>
-                </div>
+                </form>
               </div>
             </div>
           </div>
@@ -282,21 +277,57 @@
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
-                <div class="modal-body">
-                  <form>
-                    <div class="form-group">
-                      <label for="dailyGoalTime">Enter Daily Goal Time (in minutes)</label>
-                      <input type="number" class="form-control" id="dailyGoalTime" placeholder="Enter daily goal time" min="0" max="1440" required>
+                <form action="controller_zengrove.php" method="POST">
+                    <div class="modal-body">
+                    <input type="hidden" name="Page" value="MyProfile">
+                        <input type="hidden" name="Command" value="ChangeDailyGoal">
+                        <div class="form-group">
+                        <label for="dailyGoalTime">Enter Daily Goal Time (in minutes)</label>
+                        <input type="number" class="form-control" id="dailyGoalTime" name="newDailyGoal" placeholder="Enter daily goal time" min="0" max="1440" required>
+                        </div>
+                    
                     </div>
-                  </form>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn btn-primary" onclick="setGoalTime()">Submit</button>
-                </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
               </div>
             </div>
           </div>
-          
+          <script>
+             $(document).ready(function() {
+                    // Create a new XMLHttpRequest object
+                    var xhr = new XMLHttpRequest();
+
+                    // Define the function to handle the response
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                            if (xhr.status === 200) {
+                                // Parse JSON response
+                                var data = JSON.parse(xhr.responseText);
+
+                                // Update HTML elements with the retrieved values
+                                document.getElementById('username').innerText = data.username;
+                                document.getElementById('dailyGoal').innerText = data.daily_goal;
+                                document.getElementById('zenMedals').innerText = data.zen_medals;
+                            } else {
+                                console.error('Error fetching user profile. Status:', xhr.status);
+                            }
+                        }
+                    };
+
+                    // Open a new POST request to the server
+                    xhr.open('POST', 'controller_zengrove.php', true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+                    // Prepare the data to be sent
+                    var formData = 'Page=MyProfile&Command=GetUserProfile';
+
+                    // Send the request with the data
+                    xhr.send(formData);                                    
+                });
+
+          </script>
     </body>
 </html>
