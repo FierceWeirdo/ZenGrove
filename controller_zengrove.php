@@ -1,6 +1,7 @@
 <?php
 include('model_zengrove.php');
 session_start(); 
+
 if(!isset($_POST['Page'])){
     include("welcome_page_zengrove.php");
 }
@@ -25,14 +26,14 @@ else{
                 $username = $_POST['username'];
                 $password = $_POST['password'];
                 if(areCredentialsValid($username, $password)){
-                    $id = getUserId($username)['Id'];
+                    $id = getUserId($username);
                     $_SESSION['UserId'] = $id;
                     include("main_page_zengrove.php");
                     echo "<script>console.log($id); </script>";
                 }
                 else{
+                    $_SESSION['LoginError'] = true;
                     include("welcome_page_zengrove.php");
-                    echo "<script>alert('Incorrect Credentials! Try again!');</script>";
                 }
                 break;
             case 'SignUp':
@@ -41,18 +42,17 @@ else{
                 $email = $_POST['email'];
                 if(!doesUserAlreadyExist($username)){
                     if(insertUserIntoTable($username, $password, $email)){
-                        $id = getUserId($username)['Id'];
+                        $id = getUserId($username);
                         $_SESSION['UserId'] = $id;
                         include("main_page_zengrove.php");
                     }
                     else{
                         include("welcome_page_zengrove.php");
-                        echo "<script>alert('Sign Up Failed! Try again!');</script>";
                     }
                 }
                 else{
+                    $_SESSION['SignUpError'] = true;
                     include("welcome_page_zengrove.php");
-                    echo "<script>alert('Username is already taken!');</script>";
                 }
                 break;
         }
@@ -103,6 +103,13 @@ else{
                 session_destroy();
                 include('welcome_page_zengrove.php');
                 break;
+            case 'DeleteProfile':
+                $id = $_SESSION['UserId'];
+                deleteUserProfile($id);
+                session_unset();
+                session_destroy();
+                include('welcome_page_zengrove.php');
+                break;
         }
     }
     else if ($page == 'MainPage'){
@@ -116,7 +123,6 @@ else{
                     $progress = 0;
                     updateDailyProgress($id, 0);
                 }
-
                 echo $progress;
                 break;
             case 'UpdateDailyProgress':
@@ -144,9 +150,27 @@ else{
                 }
                 break;
             case 'GetUserProfile':
+                $username = $_POST['Username'];
+                $id = getUserId($username);
+                $profileArr = getUserProfile($id);
+                if ($profileArr) {
+                    $enterDate = $profileArr['Date'];
+                    $dailyGoal = $profileArr['DailyGoal'];
+                    $zenMedals = $profileArr['ZenMedals'];
+
+                    $response = array(
+                        'enterDate' => $enterDate,
+                        'dailyGoal' => $dailyGoal,
+                        'zenMedals' => $zenMedals
+                    );
+    
+                    $jsonResponse = json_encode($response);
+
+                    echo $jsonResponse;
+                }
                 break;
+            }
         }
     }
-}
 
 ?>

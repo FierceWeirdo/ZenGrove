@@ -171,6 +171,12 @@
                     <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password">
                     </div>
                     <button type="submit" class="btn btn-primary" id="login">Login</button>
+                    <?php 
+                        if(isset($_SESSION['LoginError']) && $_SESSION['LoginError']) {
+                            echo "<script>  $('#loginModal').modal('show'); </script> <span style='font-size: 18px; color: white; font-style: italic; '>Incorrect credentials! Please try again.</span>";
+                            unset($_SESSION['LoginError']);
+                        }
+                    ?>
                 </form>
                 </div>
             </div>
@@ -211,6 +217,12 @@
                         <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email">
                     </div>
                     <button type="submit" id="signUp" class="btn btn-primary">Sign Up</button>
+                    <?php 
+                        if(isset($_SESSION['SignUpError']) && $_SESSION['SignUpError']) {
+                            echo "<script>  $('#signupModal').modal('show'); </script> <span style='font-size: 18px; color: white; font-style: italic;'>Username already exists!</span>";
+                            unset($_SESSION['SignUpError']);
+                        }
+                        ?>
                 </form>
                 </div>
             </div>
