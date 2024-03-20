@@ -14,7 +14,8 @@ function areCredentialsValid($username, $password) {
 function insertUserIntoTable($user,$pass, $email){
     global $conn;
     $current_date = date("Ymd"); 
-    $sql = "INSERT INTO ZenGroveUsers(Username, Email, Password, Date)  VALUES ('$user', '$email', '$pass', '$current_date')";
+    $yesterday_date = date("Ymd", strtotime("-1 days"));
+    $sql = "INSERT INTO ZenGroveUsers(Username, Email, Password, Date, DateofLastMeditation)  VALUES ('$user', '$email', '$pass', '$current_date', '$yesterday_date')";
     $result = mysqli_query($conn, $sql);
     return $result;
 };
@@ -73,25 +74,39 @@ function deleteAccount($id){
     return $result;
 }
 
-function listExistingFriends($id){
+function listExistingFriendsId($id){
     global $conn;
-    $sql1 = "SELECT Id2 FROM ZenGroveFriends WHERE Id1=$id";
+    $sql1 = "SELECT UserId2 FROM ZenGroveFriends WHERE UserId1=$id";
     $result1 = mysqli_query($conn, $sql1);
     
-    $sql2 = "SELECT Id1 FROM ZenGroveFriends WHERE Id2=$id";
+    $sql2 = "SELECT UserId1 FROM ZenGroveFriends WHERE UserId2=$id";
     $result2 = mysqli_query($conn, $sql2);
 
     $friends = array();
+    if ($result1 && $result2){
+        while ($row = mysqli_fetch_assoc($result1)) {
+            $friends[] = $row['UserId2'];
+        }
+
+        while ($row = mysqli_fetch_assoc($result2)) {
+            $friends[] = $row['UserId1'];
+        }
+        return $friends;
+    }
+
+    else return [];
     
-    while ($row = mysqli_fetch_assoc($result1)) {
-        $friends[] = $row['Id2'];
+}
+
+function getAllZenMatesUsernames($id){
+    $friendsIdArray = listExistingFriendsId($id);
+    $listOfUsernames = [];
+
+    foreach ($friendsIdArray as $friendId){
+        $listOfUsernames[] = getUserProfile($friendId)['Username'];
     }
 
-    while ($row = mysqli_fetch_assoc($result2)) {
-        $friends[] = $row['Id1'];
-    }
-
-    return $friends;
+    return $listOfUsernames;
 }
 
 function getUserProfile($id){
@@ -104,26 +119,36 @@ function getUserProfile($id){
 function updateDailyProgress($id, $timeSpentMeditating){
     global $conn;
     $dailyProgress = getUserProfile($id)['DailyProgress'];
-    if ($dailyProgress !=100) {
-        $dailyGoal = getUserProfile($id)['DailyGoal'];
-        $value = ($timeSpentMeditating / $dailyGoal) * 100;
-        $value += $dailyProgress;
-        if ($value>=100){
-            $sql = "UPDATE ZenGroveUsers SET DailyProgress = 100 WHERE Id=$id";
-            $result = mysqli_query($conn, $sql);
-            updateZenMedals($id);
-            return $result;
-        }
-        else{
-            $sql = "UPDATE ZenGroveUsers SET DailyProgress= $value WHERE Id=$id";
-            $result = mysqli_query($conn, $sql);
-            return $result;
-        }
-        
+    if ($timeSpentMeditating == 0){
+        $sql = "UPDATE ZenGroveUsers SET DailyProgress = 0 WHERE Id=$id";
+        $result = mysqli_query($conn, $sql);
+        return $result;
     }
     else {
-        return true;
+        $current_date = date("Ymd");
+        $sql = "UPDATE ZenGroveUsers SET DateOfLastMeditation = $current_date WHERE Id=$id";
+        $result = mysqli_query($conn, $sql);
+        if ($dailyProgress !=100) {
+            $dailyGoal = getUserProfile($id)['DailyGoal'];
+            $value = ($timeSpentMeditating / $dailyGoal) * 100;
+            $value += $dailyProgress;
+            if ($value>=100){
+                $sql = "UPDATE ZenGroveUsers SET DailyProgress = 100 WHERE Id=$id";
+                $result = mysqli_query($conn, $sql);
+                updateZenMedals($id);
+                return $result;
+            }
+            else{
+                $sql = "UPDATE ZenGroveUsers SET DailyProgress= $value WHERE Id=$id";
+                $result = mysqli_query($conn, $sql);
+                return $result;
+            }
+        }
+        else {
+            return true;
+        }
     }
+    
 }
 
 function getUserId($username){
@@ -139,4 +164,20 @@ function updateZenMedals($id){
     $result = mysqli_query($conn, $sql);
     return $result;
 }
+
+function checkUserActivityDate($id){
+    global $conn;
+    $sql = "SELECT DateOfLastMeditation FROM ZenGroveUsers WHERE Id=$id";
+    $result = mysqli_query($conn, $sql);
+    $dateOfLastMeditation = mysqli_fetch_assoc($result)['DateOfLastMeditation'];
+    $current_date = date("Ymd"); 
+    if ($current_date == $dateOfLastMeditation){
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+
 ?>
