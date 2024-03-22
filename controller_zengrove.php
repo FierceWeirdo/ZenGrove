@@ -29,7 +29,6 @@ else{
                     $id = getUserId($username);
                     $_SESSION['UserId'] = $id;
                     include("main_page_zengrove.php");
-                    echo "<script>console.log($id); </script>";
                 }
                 else{
                     $_SESSION['LoginError'] = true;
@@ -80,11 +79,10 @@ else{
                 break;
             case 'ChangeUsername':
                 $id = $_SESSION['UserId'];
-                $newUsername = $_POST['newUsername'];
+                $newUsername = $_POST['NewUsername'];
                 if(!doesUserAlreadyExist($newUsername)){
                     updateUsername($id, $newUsername);
-                    echo "<script>alert('Username updated!');</script>";
-                    include('main_page_zengrove.php');
+                    echo "$newUsername";
                 }
                 else{
                     echo "<script>alert('Username already taken!');</script>";
@@ -93,10 +91,9 @@ else{
                 break;
             case 'ChangeDailyGoal':
                 $id = $_SESSION['UserId'];
-                $newDailyGoal = $_POST['newDailyGoal'];
+                $newDailyGoal = $_POST['NewDailyGoal'];
                 updateDailyGoal($id, $newDailyGoal);
-                echo "<script>alert('Daily Goal updated!');</script>";
-                include('main_page_zengrove.php');
+                echo "$newDailyGoal minutes";
                 break;
             case 'LogOut':
                 session_unset();
@@ -110,6 +107,19 @@ else{
                 session_destroy();
                 include('welcome_page_zengrove.php');
                 break;
+            case 'ChangePassword':
+                $id = $_SESSION['UserId'];
+                $oldPassword = $_POST['OldPassword'];
+                $newPassword = $_POST['NewPassword'];
+                $userPassword = getUserProfile($id)['Password'];
+                if($userPassword == $oldPassword){
+                    updatePassword($id, $newPassword);
+                    echo 'Password has been changed!';
+                }
+                else {
+                    echo 'Incorrect Old Password';
+                }
+                break;                
         }
     }
     else if ($page == 'MainPage'){
@@ -168,6 +178,42 @@ else{
 
                     echo $jsonResponse;
                 }
+                break;
+            case 'GetMessagesWithUser':
+                $username = $_POST['Username'];
+                $id = $_SESSION['UserId'];
+                $id2 = getUserId($username);
+                $tableString = getMessagesTable($id, $id2);
+                echo $tableString;
+                break;
+            case 'SendMessage':
+                $username = $_POST['Username'];
+                $message = $_POST['Message'];
+                $id = $_SESSION['UserId'];
+                $id2 = getUserId($username);
+                insertMessageIntoTable($id, $id2, $message);
+                $tableString = getMessagesTable($id, $id2);
+                echo $tableString; 
+                break;
+            case 'SearchUsers':
+                $searchTerm = $_POST['Term'];
+                $id = $_SESSION['UserId'];
+                $arrayOfSearchUsers = searchZenUsers($id, $searchTerm);
+                if (!empty($arrayOfSearchUsers)) {
+                    $str = '';
+                    foreach ($arrayOfSearchUsers as $zenUser) {
+                        $str .= "<tr><td>$zenUser</td><td><button data-username=$zenUser class='addZenMate'>Add ZenMate</button></td></tr>";
+                    }
+                    echo $str;
+                } else {
+                    echo "No Zen Mates found";
+                }
+                break;
+            case 'AddZenMate':
+                $id = $_SESSION['UserId'];
+                $searchUsername = $_POST['SearchTerm'];
+                $searchUsernameId = getUserId($searchUsername);
+                $result = addZenMate($id,$searchUsernameId);
                 break;
             }
         }

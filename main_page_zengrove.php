@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+
+<?php 
+if (!isset($_SESSION['UserId'])) {
+    include("welcome_page_zengrove.php");
+    exit();
+}
+?>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -52,6 +59,46 @@
             #mainDiv{
                 width: 100%;
             }
+
+            #wonAMedal{
+                position: absolute;
+                display: none;
+                top:10px;
+                right:10px;
+                background-color: #32696D;
+                color: #99C2C5;
+                border-radius: 20px;
+                width: max-content;
+                padding: 20px;
+                transition: display 0.5s ease;
+            }
+
+            #crossBackground {
+                position: absolute;
+                top: -10px;
+                right: -10px;
+                width: 30px;
+                height: 30px;
+                background-color: #99C2C5;
+                border: 1px solid #32696D;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+            }
+
+            #crossBackground:hover {
+                background-color: #99C2C5;
+            }
+
+            #crossBackground p {
+                margin: 0;
+                color: #fff;
+                font-weight: bold;
+                font-size: 20px;
+            }
+
         </style>
     </head>
     <body>
@@ -66,6 +113,13 @@
                     <div class="progress"> 
                         <div class="progress-bar">??%</div>
                     </div>
+                </div>
+            </div>
+            <div id="wonAMedal">
+                <h5> Congratulations <img src='ZenMedal.png' width='30px'> </h5>
+                <p style="font-size: 15px;"> You reached your goal! You get a ZenMedal! </p>
+                <div id='crossBackground'>
+                    <p> x </p>
                 </div>
             </div>
         </header>
@@ -89,9 +143,10 @@
                     $('.progress-bar').html(response + '%');
 
                     if ($('.progress-bar').html() == '100%') {
-                    $('.progress-bar').css('background-color', '#355938');
-                    $('.progress-bar').css('color', '#eee');
-                }
+                        $('.progress-bar').css('background-color', '#355938');
+                        $('.progress-bar').css('color', '#eee');
+                        $('#wonAMedal').css('right', '10px');
+                    }
                 });
 
             });
@@ -111,7 +166,7 @@
                 handleButtonClick.call(this);
             });
 
-
+            
         </script>
         <div id="mainDiv">
 

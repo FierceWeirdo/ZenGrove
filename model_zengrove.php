@@ -5,7 +5,7 @@ function areCredentialsValid($username, $password) {
     global $conn;
     $sql = "SELECT * FROM ZenGroveUsers WHERE Username = '$username' AND Password = '$password'";
     $result = mysqli_query($conn, $sql);
-    if (mysqli_num_rows($result) == 1)
+    if ($result && mysqli_num_rows($result) == 1)
         return true;
     else
         return false;
@@ -39,7 +39,7 @@ function searchNewFriends($term, $id) {
         $list[] = $row['Username'];
     }
 
-    $existingFriends = listExistingFriends($id);
+    $existingFriends = listExistingFriendsId($id);
 
     $list = array_diff($list, $existingFriends);
 
@@ -148,14 +148,18 @@ function updateDailyProgress($id, $timeSpentMeditating){
             return true;
         }
     }
-    
 }
 
 function getUserId($username){
     global $conn;
     $sql = "SELECT Id FROM ZenGroveUsers WHERE Username='$username'";
     $result = mysqli_query($conn, $sql);
-    return mysqli_fetch_assoc($result)['Id'];
+    if ($result){
+        return mysqli_fetch_assoc($result)['Id'];
+    }
+    else{
+        return false;
+    }
 }
 
 function updateZenMedals($id){
@@ -182,6 +186,75 @@ function checkUserActivityDate($id){
 function deleteUserProfile($id){
     global $conn;
     $sql = "DELETE FROM ZenGroveUsers WHERE Id=$id";
+    $result = mysqli_query($conn, $sql);
+    return $result;
+}
+
+function getMessagesBetweenUsers($id1, $id2){
+    global $conn;
+    $sql = "SELECT * FROM ZenGroveMessages WHERE (SenderId = $id1 AND ReceiverId = $id2) OR (SenderId = $id2 AND ReceiverId = $id1)  ORDER BY Timestamp";
+    $result = mysqli_query($conn, $sql);
+    $list = [];
+    if($result){
+        while($row = mysqli_fetch_assoc($result)){
+            $list[] = $row;
+        }
+        return $list;
+    }
+    else{
+        return [];
+    }
+    
+}
+
+function getMessagesTable($id1, $id2) {
+    $messages = getMessagesBetweenUsers($id1, $id2);
+    $table = '';
+    foreach ($messages as $message) {
+        $table .= '<tr>';
+        $table .= '<td><b>' . getUserProfile($message['SenderId'])['Username'] . ': </b> ' . $message['Message'] . '</td>';
+        $table .= '<td>' . $message['Timestamp'] . '</td>';
+        $table .= '</tr>';
+    }
+    return $table;
+}
+
+function insertMessageIntoTable($senderId, $receiverId, $message){
+    global $conn;
+    $timestamp = date("Y-m-d H:i:s");
+    $sql = "INSERT INTO ZenGroveMessages(SenderId, ReceiverId, Message, Timestamp) VALUES ($senderId, $receiverId, '$message', '$timestamp')";
+    $result = mysqli_query($conn, $sql);
+    return $result;
+}
+
+function updatePassword($id, $password){
+    global $conn;
+    $sql = "UPDATE ZenGroveUsers SET Password= '$password' WHERE Id=$id";
+    $result = mysqli_query($conn, $sql);
+    return $result;
+}
+
+
+function searchZenUsers($id, $username) {
+    global $conn;
+    $sql = "SELECT Username FROM ZenGroveUsers WHERE Username LIKE '%$username%'";
+    $existingFriends = getAllZenMatesUsernames($id);
+    $result = mysqli_query($conn, $sql);
+    $list = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $list[] = $row['Username'];
+    }
+
+    $list = array_diff($list, $existingFriends);
+    $currentUser[0] = getUserProfile($id)['Username'];
+    $list = array_diff($list, $currentUser);
+
+    return $list;
+}
+
+function addZenMate($id1, $id2) {
+    global $conn;
+    $sql = "INSERT INTO ZenGroveFriends(UserId1, UserId2) VALUES ($id1, $id2)";
     $result = mysqli_query($conn, $sql);
     return $result;
 }
