@@ -1,4 +1,13 @@
 <!DOCTYPE html>
+
+<?php 
+if (!isset($_SESSION['UserId'])) {
+    // If the user is not logged in, include the welcome page and exit
+    include("welcome_page_zengrove.php");
+    exit();
+}
+?>
+
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -140,20 +149,33 @@
             }
 
             .modal-footer .btn-primary {
-                color: #293434; /* Change hover text color */
-                background-color: #99C2C5; /* Change hover background color */
-                border-color: #32696D; /* Change hover border color */
+                color: #293434; 
+                background-color: #99C2C5; 
+                border-color: #32696D; 
                 font-weight: 900;
             }
 
-            /* Adjust hover color */
             .modal-footer .btn-primary:hover {
-               
-                color: white; /* Change text color */
-                background-color: #32696D; /* Change background color */
-                border-color: #99C2C5; /* Change border color */
+                color: white; 
+                background-color: #32696D; 
+                border-color: #99C2C5;
             }
 
+            #changePasswordSubmitButton{
+                background-color: #32696D; 
+                border: 2px solid #99C2C5;
+                color: #99C2C5;
+                &:hover{
+                    background-color: #99C2C5; 
+                    border: 2px solid #99C2C5;
+                    color: #32696D;
+                }
+            }
+            #dailyGoalValWrong{
+                display: none;
+                color: white;
+                font-size: 14px;
+            }
         </style>
     </head>
     <body>
@@ -255,6 +277,24 @@
             $('#changeUsernameButton').click(function(){
                 $('#changeUsernameModal').modal('show');
             });
+            $('#changeUsernameSubmitButton').click(function(){
+                $.ajax({
+                    url: 'controller_zengrove.php',
+                    type: 'POST',
+                    data: {
+                        Page: 'MyProfile',
+                        Command: 'ChangeUsername',
+                        NewUsername: $('#newUsername').val()
+                    },
+                    success: function(response ) {
+                        $('#username').html(response);
+                        $('#changeUsernameModal').modal('hide');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching data:', error);
+                    }
+                });
+            });
         </script>
         <div class="modal fade" id="changeUsernameModal" tabindex="-1" role="dialog" aria-labelledby="changeUsernameModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -276,18 +316,43 @@
                     </div> 
                     <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-primary" id='changeUsernameSubmitButton'>Submit</button>
                     </div>
                 </form>
               </div>
             </div>
           </div>
 
-
           <!-- Change Daily Goal -->
         <script>
             $('#changeDailyGoalButton').click(function(){
                 $('#setGoalTimeModal').modal('show');
+            });
+
+            $('#changeDailyGoalSubmitButton').click(function(){
+                if ($('#dailyGoalTime').val() >=1 && $('#dailyGoalTime').val() <=1440){
+                    $('#dailyGoalValWrong').css('display', 'none');
+                    $.ajax({
+                    url: 'controller_zengrove.php',
+                    type: 'POST',
+                    data: {
+                        Page: 'MyProfile',
+                        Command: 'ChangeDailyGoal',
+                        NewDailyGoal: $('#dailyGoalTime').val()
+                    },
+                    success: function(response ) {
+                        $('#dailyGoal').html(response);
+                        $('#setGoalTimeModal').modal('hide');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching data:', error);
+                    }
+                });
+                }
+                else {
+                    $('#dailyGoalValWrong').css('display', 'inline-block');
+                }
+                
             });
         </script>
         <div class="modal fade" id="setGoalTimeModal" tabindex="-1" role="dialog" aria-labelledby="setGoalTimeModalLabel" aria-hidden="true">
@@ -305,31 +370,81 @@
                         <input type="hidden" name="Command" value="ChangeDailyGoal">
                         <div class="form-group">
                         <label for="dailyGoalTime">Enter Daily Goal Time (in minutes)</label>
-                        <input type="number" class="form-control" id="dailyGoalTime" name="newDailyGoal" placeholder="Enter daily goal time" min="0" max="1440" required>
+                        <input type="number" class="form-control" id="dailyGoalTime" placeholder="Enter daily goal time" min="1" max="1440" required>
                         </div>
+                        <p id='dailyGoalValWrong'> The value must be greater than 0 and less than 1440! </p>
                     
                     </div>
                     <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-primary" id="changeDailyGoalSubmitButton">Submit</button> 
                     </div>
                 </form>
               </div>
             </div>
           </div>
+
+          <script>
+            $('#changePasswordButton').click(function(){
+                $('#changePasswordModal').modal('show');
+            });
+
+
+         </script>
+
+          <!--Change Password Modal -->
+          <div class="modal fade" id="changePasswordModal" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="oldPassword">Old Password</label>
+                        <input type="password" class="form-control" id="oldPassword" name="oldPassword" placeholder="Enter your old password">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" name="newPassword" placeholder="Enter your new password">
+                    </div>
+                    <button type="button" class="btn btn-primary" id="changePasswordSubmitButton">Submit</button> <span id='resultSpan'></span>
+                </form>
+                </div>
+
+                <script>
+                    $('#changePasswordSubmitButton').click(function(){
+                $.ajax({
+                    url: 'controller_zengrove.php',
+                    type: 'POST',
+                    data: {
+                        Page: 'MyProfile',
+                        Command: 'ChangePassword',
+                        OldPassword: $('#oldPassword').val(),
+                        NewPassword: $('#newPassword').val()
+                    },
+                    success: function(response ) {
+                        $('#resultSpan').html("   " + response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching data:', error);
+                    }
+                });
+            });
+            </script>
+            </div>
+            </div>
+        </div>
           <script>
              $(document).ready(function() {
-                    // Create a new XMLHttpRequest object
                     var xhr = new XMLHttpRequest();
-
-                    // Define the function to handle the response
                     xhr.onreadystatechange = function() {
                         if (xhr.readyState === XMLHttpRequest.DONE) {
                             if (xhr.status === 200) {
-                                // Parse JSON response
                                 var data = JSON.parse(xhr.responseText);
 
-                                // Update HTML elements with the retrieved values
                                 document.getElementById('username').innerText = data.username;
                                 document.getElementById('dailyGoal').innerText = data.daily_goal + ' minutes';
                                 document.getElementById('zenMedals').innerText = data.zen_medals;
@@ -339,14 +454,9 @@
                         }
                     };
 
-                    // Open a new POST request to the server
                     xhr.open('POST', 'controller_zengrove.php', true);
                     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-                    // Prepare the data to be sent
                     var formData = 'Page=MyProfile&Command=GetUserProfile';
-
-                    // Send the request with the data
                     xhr.send(formData);                                    
                 });
 

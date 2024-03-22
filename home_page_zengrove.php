@@ -1,4 +1,12 @@
 <html>
+
+<?php 
+if (!isset($_SESSION['UserId'])) {
+    // If the user is not logged in, include the welcome page and exit
+    include("welcome_page_zengrove.php");
+    exit();
+}
+?>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -123,13 +131,33 @@
                 align-items: center;
                 justify-content: center;
             }
+
+            .animated {
+                animation: moveUpDown 3s infinite alternate;
+            }
+
+            @keyframes moveUpDown {
+                0% {
+                    top: 0px;
+                }
+                100% {
+                    top: -30px; 
+                }
+            }
+            
+            #zenKo {
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translateX(-50%);
+            }
         </style>
     </head>
     <body>
         <div class="container-fluid">
             <div id="centerDiv" class="row">
                 <div class="col">
-                    <img class="img-responsive zenko" src="ZenKo.png">
+                    <img class="img-responsive zenko" id="zenKo" src="ZenKo.png">
                 </div>
                 <div class="col">
                     <div class="circle">
@@ -143,6 +171,7 @@
                             var fireCounter = false;
                             $('.circle').click(function() {
                                 if (!timer) {
+                                    $('#zenKo').addClass('animated');
                                     let audio1 = $('#rainAudio')[0]; 
                                     let audio2 = $('#birdAudio')[0]; 
                                     let audio3 = $('#fireAudio')[0];
@@ -170,7 +199,7 @@
                                     let audio3 = $('#fireAudio')[0];
                                     clearInterval(timer);
                                     timer = null;
-                                    
+                                    $('#zenKo').removeClass('animated');
                                     elapsedTime = ((Date.now() - startTime) / 1000 / 60); //storing in minutes
                                     console.log(elapsedTime);
                                     var postQuery = {

@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+<?php 
+if (!isset($_SESSION['UserId'])) {
+    // If the user is not logged in, include the welcome page and exit
+    include("welcome_page_zengrove.php");
+    exit();
+}
+?>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -159,20 +166,17 @@
                 width: 10px;
             }
 
-
             #chatHistory::-webkit-scrollbar-track {
                 background: #99C2C5;
                 border-radius: 20px;
                 padding: 2px;
             }
 
-                /* Handle */
             #chatHistory::-webkit-scrollbar-thumb {
                 background: #064348;
                 border-radius: 20px;
             }
 
-                /* Handle on hover */
             #chatHistory::-webkit-scrollbar-thumb:hover {
                 background: #577e81;
                 border-radius: 20px;
@@ -190,6 +194,11 @@
                 border-radius: 20px;
                 font-weight: 900;
                 border: none;
+            }
+
+            #messageInput::placeholder{
+                color: white !important;
+                font-weight: 100;
             }
 
             #sendButton{
@@ -224,8 +233,49 @@
                     background-color: rgba(26, 33, 43, 0.2);
                 }
             }
+            
             #friendListTable tr:hover {
                 cursor: pointer !important;
+            }
+
+            #searchContainer {
+                display: none;
+                width: 50%;
+                height: auto;
+                margin: 0.5%;
+                padding: 1%;
+                color: #32696D;
+                background-color: #99C2C5;
+                overflow: auto;
+                z-index: 3;
+                border-radius: 20px;
+                position: absolute;
+                top: 13%;
+                border: 1px solid #32696D;
+            }
+
+            .addZenMate {
+                color: white;
+                background-color: #32696D;
+                border: 0.5px solid #32696D;
+                border-radius: 20px;
+                float: right;
+            }
+
+            #searchDropdownTable {
+                margin-bottom: 0rem !important;
+            }
+
+            #searchDropdownTable tr td{
+                border: none !important;
+            }
+
+            #searchDropdownTable tr th{
+                border: none !important;
+            }
+
+            .resultUser {
+                float: left;
             }
       
         </style>
@@ -242,6 +292,58 @@
                             <img src="SearchIcon.png" id="searchIcon">
                         </form>
                     </div>
+                    <div id="searchContainer">     
+                        <table class="table table-fluid" id="searchDropdownTable">
+                        </table>
+                    </div>
+                    <script>
+                        $(document).ready(function(){
+                            var searchTerm;
+                            $('#row2').click(function(){
+                                $('#searchContainer').css('display','none');
+                                $('#row2').css('filter', 'blur(0px)');
+                            });
+                            $('#searchIcon').click(function() {
+                                searchTerm = $('#searchUsernameInputBox').val();
+                                $('#searchContainer').css('display','block');
+                                $('#row2').css('filter', 'blur(5px)');
+                                $.ajax({
+                                    url: 'controller_zengrove.php',
+                                    type: 'POST',
+                                    data: {
+                                        Page: 'MyZenMates',
+                                        Command: 'SearchUsers',
+                                        Term: searchTerm
+                                    },
+                                    success: function(response ) {
+                                        $('#searchDropdownTable').html(response);
+                                        $('.addZenMate').click(function() {
+                                            var username = $(this).data('username');
+                                            $.ajax({
+                                                url: 'controller_zengrove.php',
+                                                type: 'POST',
+                                                data: {
+                                                    Page: 'MyZenMates',
+                                                    Command: 'AddZenMate',
+                                                    SearchTerm: username
+                                                },
+                                                success: function(response) {
+                                                    $('#searchContainer').css('display','none');
+                                                    $('#row2').css('filter', 'blur(0px)');
+                                                },
+                                                error: function(xhr, status, error) {
+                                                    console.error('Error fetching data:', error);
+                                                }
+                                            });
+                                        });
+                                    },
+                                    error: function(xhr, status, error) {
+                                        console.error('Error fetching data:', error);
+                                    }
+                                });
+                            });
+                        });              
+                    </script>
                 </div>
                 <div class="row" id="row2">
                     <div class="col-sm-3">
@@ -249,7 +351,6 @@
                         <div id="friendsList">
                             <div class="container-fluid">          
                                 <table class="table table-hover" id="friendListTable">
-                                    
                                 </table>
                             </div>
                         </div>
@@ -268,39 +369,12 @@
                                 <div id="chatHistory" class="col-sm-12">
                                     <div class="container-fluid">          
                                         <table class="table table-hover" id="friendMessagingList">
-                                            <tr>
-                                              <td>John</td>
-                                            </tr>
-                                            <tr>
-                                              <td>Mary</td>
-                                            </tr>
-                                            <tr>
-                                              <td>July</td>
-                                            </tr>
-                                            <tr>
-                                                <td>John</td>
-                                              </tr>
-                                              <tr>
-                                                <td>Mary</td>
-                                              </tr>
-                                              <tr>
-                                                <td>July</td>
-                                              </tr>
-                                              <tr>
-                                                <td>John</td>
-                                              </tr>
-                                              <tr>
-                                                <td>Mary</td>
-                                              </tr>
-                                              <tr>
-                                                <td>July</td>
-                                              </tr>
-                                            
+
                                         </table>
                                         </div>
                                 </div>
                                 <div id="messageTypingMainDiv" class="row">
-                                    <input type="text" id="messageInput" class="col-sm-10">
+                                    <input type="text" id="messageInput" placeholder="Enter a message" class="col-sm-10">
                                     <div class="col-sm-2">
                                         <div id="sendButton">
                                             Send <img src="SendIcon.png">
@@ -319,25 +393,96 @@
             </div>
             
             <script>
+                
                 $(document).ready(function(){
                     $('#messageOrProfileButton').html('View Profile');
 
-                    $.ajax({
-                        url: 'controller_zengrove.php',
-                        type: 'POST',
-                        data: {
-                            Page: 'MyZenMates',
-                            Command: 'GetAllZenMates'
-                        },
-                        success: function(response ) {
-                            $('#friendListTable').html(response);
-                            $('#usernameHeader').html($('#friendsList tr:first-of-type').text());
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error fetching data:', error);
+                    $('#sendButton').click(function() {
+                        if ($.trim($('#messageInput').val()) !== ''){
+                            $.ajax({
+                            url: 'controller_zengrove.php',
+                            type: 'POST',
+                            data: {
+                                Page: 'MyZenMates',
+                                Command: 'SendMessage',
+                                Username: $('#usernameHeader').text(),
+                                Message: $.trim($('#messageInput').val())
+                            },
+                            success: function(response ) {
+                                $('#friendMessagingList').html(response);
+                                $('#messageInput').val('');
+                                
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error fetching data:', error);
+                            }
+                        });
                         }
                     });
+                    
+
+                    function checkUserMessages(){
+                        if ($.trim($('#usernameHeader').text()) !== ''){
+                            $.ajax({
+                                url: 'controller_zengrove.php',
+                                type: 'POST',
+                                data: {
+                                    Page: 'MyZenMates',
+                                    Command: 'GetMessagesWithUser',
+                                    Username: $('#usernameHeader').html()
+                                },
+                                success: function(response) {
+                                    $('#friendMessagingList').html(response);   
+                                    // var chatHistory = document.getElementById("chatHistory");
+                                    // chatHistory.scrollTop = chatHistory.scrollHeight;                             
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error fetching data:', error);
+                                }
+                            });
+                        }
+                    }
+
+                    $.ajax({
+                            url: 'controller_zengrove.php',
+                            type: 'POST',
+                            data: {
+                                Page: 'MyZenMates',
+                                Command: 'GetAllZenMates'
+                            },
+                            success: function(response ) {
+                                $('#friendListTable').html(response);
+                                $('#usernameHeader').html($('#friendsList tr:first-of-type').text());
+                                checkUserMessages();
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error fetching data:', error);
+                            }
+                        });            
+
+                    checkuserFriends();
+                    setInterval(checkuserFriends, 1000);
+
+                    function checkuserFriends(){
+                        $.ajax({
+                            url: 'controller_zengrove.php',
+                            type: 'POST',
+                            data: {
+                                Page: 'MyZenMates',
+                                Command: 'GetAllZenMates'
+                            },
+                            success: function(response ) {
+                                $('#friendListTable').html(response);
+                                checkUserMessages();
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error fetching data:', error);
+                            }
+                        });
+                    }                    
                 });
+
+                
                 $('#messageOrProfileButton').click(function(){
                     if($('#messageOrProfileButton').html() == 'View Profile'){
                         $('#messageOrProfileButton').html('Message');
@@ -355,6 +500,22 @@
                 $(document).on('click', '#friendsList tr td', function() {
                     $('#usernameHeader').html($(this).text());
                     getUserInformation();
+
+                    $.ajax({
+                        url: 'controller_zengrove.php',
+                        type: 'POST',
+                        data: {
+                            Page: 'MyZenMates',
+                            Command: 'GetMessagesWithUser',
+                            Username: $('#usernameHeader').html()
+                        },
+                        success: function(response ) {
+                            $('#friendMessagingList').html(response);                                
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error fetching data:', error);
+                        }
+                    });
                 });
 
                 function getUserInformation(){
@@ -379,28 +540,18 @@
                 }
             </script>
 
+            <script>
+                function formatDate(inputDate) {
+                const year = inputDate.substring(0, 4);
+                const month = inputDate.substring(4, 6);
+                const day = inputDate.substring(6, 8);
+                const formattedDate = new Date(`${year}-${month}-${day}`);
+                const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                const monthName = months[formattedDate.getMonth()];
+                const output = `${day} ${monthName} ${year}`;
 
-<script>
-    function formatDate(inputDate) {
-    // Extract year, month, and day from the input string
-    const year = inputDate.substring(0, 4);
-    const month = inputDate.substring(4, 6);
-    const day = inputDate.substring(6, 8);
-
-    // Create a new Date object with extracted components
-    const formattedDate = new Date(`${year}-${month}-${day}`);
-
-    // Define months array to get the name of the month
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
-    // Get the month name
-    const monthName = months[formattedDate.getMonth()];
-
-    // Format the output string
-    const output = `${day} ${monthName} ${year}`;
-
-    return output;
-}
+                return output;
+            }
     </script>
          </div>
     </body>
