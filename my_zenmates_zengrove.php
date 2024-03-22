@@ -213,17 +213,57 @@
                 display: none;
             }
 
-            #friendListTable {
+            #friendListTable tbody{
                 width: 100%;
             }
 
-            #friendListTable tr td{
-                border-top: none !important;
+            #friendListTable tbody tr td{
+                border-top: none;
             }
-            #friendListTable tr:hover {
-                cursor: pointer !important;
+
+            #friendListTable tbody tr:hover {
+                cursor: pointer;
             }
-      
+
+            #searchContainer {
+                display: none;
+                width: 50%;
+                height: auto;
+                margin: 0.5%;
+                padding: 1%;
+                color: #32696D;
+                background-color: #99C2C5;
+                overflow: auto;
+                z-index: 3;
+                border-radius: 20px;
+                position: absolute;
+                top: 13%;
+                border: 1px solid #32696D;
+            }
+
+            .addZenMate {
+                color: white;
+                background-color: #32696D;
+                border: 0.5px solid #32696D;
+                border-radius: 20px;
+                float: right;
+            }
+            #searchDropdownTable {
+                margin-bottom: 0rem !important;
+            }
+
+            #searchDropdownTable tr td{
+                border: none !important;
+                
+            }
+
+            #searchDropdownTable tr th{
+                border: none !important;
+            }
+
+            .resultUser {
+                float: left;
+            }
         </style>
     </head>
     <body>
@@ -231,13 +271,60 @@
             <div class="h-100 container-fuid">
                 <div class="row">
                     <div id="searchBar">
-                        <form>
+                        <form action='controller_zengrove.php' method='POST'>
                             <input type="hidden" name="Page" value="My_Zenmates">
                             <input type="hidden" name="Command" value="Search_Friends">
-                            <input id="searchUsernameInputBox" type="text" name="term" placeholder="Search a new ZenMate with Username">
+                            <input id="searchUsernameInputBox" type="text" name="Term" placeholder="Search a new ZenMate with Username">
                             <img src="SearchIcon.png" id="searchIcon">
                         </form>
                     </div>
+                    <div id="searchContainer">     
+                        <table class="table table-fluid" id="searchDropdownTable">
+                        </table>
+                    </div>
+                    <script>
+                        $(document).ready(function(){
+                            var searchTerm;
+                            $('#searchIcon').click(function() {
+                                searchTerm = $('#searchUsernameInputBox').val();
+                                $('#searchContainer').css('display','block');
+                                $('#row2').css('filter', 'blur(5px)');
+                                $.ajax({
+                                    url: 'controller_zengrove.php',
+                                    type: 'POST',
+                                    data: {
+                                        Page: 'MyZenMates',
+                                        Command: 'SearchUsers',
+                                        Term: searchTerm
+                                    },
+                                    success: function(response ) {
+                                        $('#searchDropdownTable').html(response);
+                                        $('.addZenMate').click(function() {
+                                            var username = $(this).data('username');
+                                            $.ajax({
+                                                url: 'controller_zengrove.php',
+                                                type: 'POST',
+                                                data: {
+                                                    Page: 'MyZenMates',
+                                                    Command: 'AddZenMate',
+                                                    SearchTerm: username
+                                                },
+                                                success: function(response) {
+                                                    alert(response);
+                                                },
+                                                error: function(xhr, status, error) {
+                                                    console.error('Error fetching data:', error);
+                                                }
+                                            });
+                                        });
+                                    },
+                                    error: function(xhr, status, error) {
+                                        console.error('Error fetching data:', error);
+                                    }
+                                });
+                            });
+                        });              
+                    </script>
                 </div>
                 <div class="row" id="row2">
                     <div class="col-sm-3">
@@ -245,6 +332,33 @@
                         <div id="friendsList">
                             <div class="container-fluid">          
                                 <table class="table table-hover" id="friendListTable">
+                                    <tr>
+                                      <td>John</td>
+                                    </tr>
+                                    <tr>
+                                      <td>Mary</td>
+                                    </tr>
+                                    <tr>
+                                      <td>July</td>
+                                    </tr>
+                                    <tr>
+                                        <td>John</td>
+                                      </tr>
+                                      <tr>
+                                        <td>Mary</td>
+                                      </tr>
+                                      <tr>
+                                        <td>July</td>
+                                      </tr>
+                                      <tr>
+                                        <td>John</td>
+                                      </tr>
+                                      <tr>
+                                        <td>Mary</td>
+                                      </tr>
+                                      <tr>
+                                        <td>July</td>
+                                      </tr>
                                     
                                 </table>
                             </div>
@@ -263,7 +377,7 @@
                             <div id="messagingDiv" class="container">
                                 <div id="chatHistory" class="col-sm-12">
                                     <div class="container-fluid">          
-                                        <table class="table table-hover" id="friendMessagingList">
+                                        <table class="table table-hover" id="friendListTable">
                                             <tr>
                                               <td>John</td>
                                             </tr>
@@ -309,43 +423,29 @@
                                 <p>Daily Meditation Goal: </p>
                                 <p>Total ZenMedals of Achievement: </p>
                             </div>
+                            <script>
+                                $(document).ready(function(){
+                                    $('#messageOrProfileButton').html('View Profile');
+                                });
+                                $('#messageOrProfileButton').click(function(){
+                                    if($('#messageOrProfileButton').html() == 'View Profile'){
+                                        $('#messageOrProfileButton').html('Message');
+                                        $('#messagingDiv').css('display', 'none');
+                                        $('#friendProfileDiv').css('display', 'block');
+                                    }
+                                    else {
+                                        $('#messageOrProfileButton').html('View Profile');
+                                        $('#messagingDiv').css('display', 'block');
+                                        $('#friendProfileDiv').css('display', 'none');
+                                    }
+                                });
+                            </script>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <script>
-                $(document).ready(function(){
-                    $('#messageOrProfileButton').html('View Profile');
-
-                    $.ajax({
-                        url: 'controller_zengrove.php',
-                        type: 'POST',
-                        data: {
-                            Page: 'MyZenMates',
-                            Command: 'GetAllZenMates'
-                        },
-                        success: function(response ) {
-                            $('#friendListTable').html(response);
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error fetching data:', error);
-                        }
-                    });
-                });
-                $('#messageOrProfileButton').click(function(){
-                    if($('#messageOrProfileButton').html() == 'View Profile'){
-                        $('#messageOrProfileButton').html('Message');
-                        $('#messagingDiv').css('display', 'none');
-                        $('#friendProfileDiv').css('display', 'block');
-                    }
-                    else {
-                        $('#messageOrProfileButton').html('View Profile');
-                        $('#messagingDiv').css('display', 'block');
-                        $('#friendProfileDiv').css('display', 'none');
-                    }
-                });
-            </script>
+            
          </div>
     </body>
 </html>
