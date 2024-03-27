@@ -104,6 +104,10 @@ if (!isset ($_POST['Page'])) {
                 break;
             case 'DeleteProfile':
                 $id = $_SESSION['UserId'];
+                //Get rid of all friends rows
+                deleteFriendRelationshipsByUserId($id);
+                //Get rid of all messages with friends
+                deleteMessagesByUserId($id);
                 deleteUserProfile($id);
                 session_unset();
                 session_destroy();
@@ -183,14 +187,29 @@ if (!isset ($_POST['Page'])) {
                     $jsonResponse = json_encode($response);
 
                     echo $jsonResponse;
+                }else{
+                    $response = array(
+                        'enterDate' => 'No Data',
+                        'dailyGoal' => 'No Data',
+                        'zenMedals' => 'No Data'
+                    );
+
+                    $jsonResponse = json_encode($response);
+
+                    echo $jsonResponse;
                 }
                 break;
             case 'GetMessagesWithUser':
                 $username = $_POST['Username'];
                 $id = $_SESSION['UserId'];
                 $id2 = getUserId($username);
-                $tableString = getMessagesTable($id, $id2);
-                echo $tableString;
+                if($id2){
+                    $tableString = getMessagesTable($id, $id2);
+                    echo $tableString;
+                }
+                else{
+                    echo 'No Messages Found';
+                }
                 break;
             case 'SendMessage':
                 $username = $_POST['Username'];

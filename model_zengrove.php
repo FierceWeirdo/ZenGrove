@@ -156,7 +156,7 @@ function getUserId($username){
     global $conn;
     $sql = "SELECT Id FROM ZenGroveUsers WHERE Username='$username'";
     $result = mysqli_query($conn, $sql);
-    if ($result){
+    if (mysqli_num_rows($result) > 0){
         return mysqli_fetch_assoc($result)['Id'];
     }
     else{
@@ -211,14 +211,19 @@ function getMessagesBetweenUsers($id1, $id2){
 
 function getMessagesTable($id1, $id2) {
     $messages = getMessagesBetweenUsers($id1, $id2);
-    $table = '';
-    foreach ($messages as $message) {
-        $table .= '<tr>';
-        $table .= '<td><b>' . getUserProfile($message['SenderId'])['Username'] . ': </b> ' . $message['Message'] . '</td>';
-        $table .= '<td>' . $message['Timestamp'] . '</td>';
-        $table .= '</tr>';
+    if ($messages) {
+        $table = '';
+        foreach ($messages as $message) {
+            $table .= '<tr>';
+            $table .= '<td><b>' . getUserProfile($message['SenderId'])['Username'] . ': </b> ' . $message['Message'] . '</td>';
+            $table .= '<td>' . $message['Timestamp'] . '</td>';
+            $table .= '</tr>';
+        }
+        return $table;
     }
-    return $table;
+    else {
+        return false;
+    }
 }
 
 function insertMessageIntoTable($senderId, $receiverId, $message){
@@ -260,4 +265,18 @@ function addZenMate($id1, $id2) {
     $result = mysqli_query($conn, $sql);
     return $result;
 }
+
+function deleteFriendRelationshipsByUserId($id) {
+    global $conn;
+    $sql = "DELETE FROM ZenGroveFriends WHERE UserId1 = $id OR UserId2 = $id";
+    $result = mysqli_query($conn, $sql);
+    return $result;
+}
+function deleteMessagesByUserId($id) {
+    global $conn;
+    $sql = "DELETE FROM ZenGroveMessages WHERE SenderId = $id OR ReceiverId = $id";
+    $result = mysqli_query($conn, $sql);
+    return $result;
+}
+
 ?>
