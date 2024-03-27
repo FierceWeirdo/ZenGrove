@@ -1,63 +1,63 @@
 <?php
-include('model_zengrove.php');
-session_start(); 
+include ('model_zengrove.php');
+session_start();
 
-if(!isset($_POST['Page'])){
-    include("welcome_page_zengrove.php");
-}
-else{
+if (!isset ($_POST['Page'])) {
+    include ("welcome_page_zengrove.php");
+} else {
     $page = $_POST['Page'];
     $command = $_POST['Command'];
-    switch ($command){
+    switch ($command) {
         case 'ShowHomePage':
-            include("home_page_zengrove.php");
+            include ("home_page_zengrove.php");
             break;
         case 'ShowMyZenMates':
-            include("my_zenmates_zengrove.php");
+            include ("my_zenmates_zengrove.php");
             break;
         case 'ShowMyProfile':
-            include("my_profile_zengrove.php");
+            include ("my_profile_zengrove.php");
             break;
     }
 
-    if($page == 'WelcomePage'){
-        switch($command){
+    if ($page == 'WelcomePage') {
+        switch ($command) {
             case 'LogIn':
                 $username = $_POST['username'];
                 $password = $_POST['password'];
-                if(areCredentialsValid($username, $password)){
+                if (areCredentialsValid($username, $password)) {
                     $id = getUserId($username);
                     $_SESSION['UserId'] = $id;
-                    include("main_page_zengrove.php");
-                }
-                else{
+                    include ("main_page_zengrove.php");
+                } else {
                     $_SESSION['LoginError'] = true;
-                    include("welcome_page_zengrove.php");
+                    include ("welcome_page_zengrove.php");
                 }
                 break;
             case 'SignUp':
                 $username = $_POST['username'];
                 $password = $_POST['password'];
                 $email = $_POST['email'];
-                if(!doesUserAlreadyExist($username)){
-                    if(insertUserIntoTable($username, $password, $email)){
-                        $id = getUserId($username);
-                        $_SESSION['UserId'] = $id;
-                        include("main_page_zengrove.php");
+                if (preg_match('/^[a-zA-Z0-9_]{3,20}$/', $username)) {
+                    if (!doesUserAlreadyExist($username)) {
+                        if (insertUserIntoTable($username, $password, $email)) {
+                            $id = getUserId($username);
+                            $_SESSION['UserId'] = $id;
+                            include ("main_page_zengrove.php");
+                        } else {
+                            include ("welcome_page_zengrove.php");
+                        }
+                    } else {
+                        $_SESSION['SignUpError'] = true;
+                        include ("welcome_page_zengrove.php");
                     }
-                    else{
-                        include("welcome_page_zengrove.php");
-                    }
-                }
-                else{
-                    $_SESSION['SignUpError'] = true;
-                    include("welcome_page_zengrove.php");
+                } else {
+                    $_SESSION['SignUpUsernameError'] = true;
+                    include ("welcome_page_zengrove.php");
                 }
                 break;
         }
-    }
-    else if ($page == 'MyProfile') {
-        switch($command) {
+    } else if ($page == 'MyProfile') {
+        switch ($command) {
             case 'GetUserProfile':
                 $id = $_SESSION['UserId'];
                 $profileArr = getUserProfile($id);
@@ -71,7 +71,7 @@ else{
                         'daily_goal' => $profileDailyGoal,
                         'zen_medals' => $profileZenMedals
                     );
-    
+
                     $jsonResponse = json_encode($response);
 
                     echo $jsonResponse;
@@ -80,13 +80,15 @@ else{
             case 'ChangeUsername':
                 $id = $_SESSION['UserId'];
                 $newUsername = $_POST['NewUsername'];
-                if(!doesUserAlreadyExist($newUsername)){
-                    updateUsername($id, $newUsername);
-                    echo "$newUsername";
-                }
-                else{
-                    echo "<script>alert('Username already taken!');</script>";
-                    include('main_page_zengrove.php');
+                if (!doesUserAlreadyExist($newUsername)) {
+                    if (preg_match('/^[a-zA-Z0-9_]{3,20}$/', $newUsername)) {
+                        updateUsername($id, $newUsername);
+                        echo 1;
+                    } else {
+                        echo 2;
+                    }
+                } else {
+                    echo 3;
                 }
                 break;
             case 'ChangeDailyGoal':
@@ -98,36 +100,36 @@ else{
             case 'LogOut':
                 session_unset();
                 session_destroy();
-                include('welcome_page_zengrove.php');
+                include ('welcome_page_zengrove.php');
                 break;
             case 'DeleteProfile':
                 $id = $_SESSION['UserId'];
                 deleteUserProfile($id);
                 session_unset();
                 session_destroy();
-                include('welcome_page_zengrove.php');
+                include ('welcome_page_zengrove.php');
                 break;
             case 'ChangePassword':
                 $id = $_SESSION['UserId'];
                 $oldPassword = $_POST['OldPassword'];
                 $newPassword = $_POST['NewPassword'];
                 $userPassword = getUserProfile($id)['Password'];
-                if($userPassword == $oldPassword){
-                    updatePassword($id, $newPassword);
+                $hashedOldPassword = hash('sha1', $oldPassword);
+                $hashedNewPassword = hash('sha1', $newPassword);
+                if ($userPassword == $hashedOldPassword) {
+                    updatePassword($id, $hashedNewPassword);
                     echo 'Password has been changed!';
-                }
-                else {
+                } else {
                     echo 'Incorrect Old Password';
                 }
-                break;                
+                break;
         }
-    }
-    else if ($page == 'MainPage'){
-        switch($command){
+    } else if ($page == 'MainPage') {
+        switch ($command) {
             case 'GetDailyProgress':
                 $id = $_SESSION['UserId'];
                 $lastMeditatedTodayBool = checkUserActivityDate($id);
-                if($lastMeditatedTodayBool){
+                if ($lastMeditatedTodayBool) {
                     $progress = getUserProfile($id)['DailyProgress'];
                 } else {
                     $progress = 0;
@@ -142,14 +144,18 @@ else{
                 $progress = getUserProfile($id)['DailyProgress'];
                 echo $progress;
                 break;
+            case 'LogOut':
+                session_unset();
+                session_destroy();
+                include ('welcome_page_zengrove.php');
+                break;
         }
-    }
-    else if($page == 'MyZenMates'){
-        switch ($command){
+    } else if ($page == 'MyZenMates') {
+        switch ($command) {
             case 'GetAllZenMates':
                 $id = $_SESSION['UserId'];
                 $arrayOfZenMates = getAllZenMatesUsernames($id);
-                if (!empty($arrayOfZenMates)) {
+                if (!empty ($arrayOfZenMates)) {
                     $str = '';
                     foreach ($arrayOfZenMates as $zenMate) {
                         $str .= "<tr><td>$zenMate</td></tr>";
@@ -173,7 +179,7 @@ else{
                         'dailyGoal' => $dailyGoal,
                         'zenMedals' => $zenMedals
                     );
-    
+
                     $jsonResponse = json_encode($response);
 
                     echo $jsonResponse;
@@ -193,13 +199,13 @@ else{
                 $id2 = getUserId($username);
                 insertMessageIntoTable($id, $id2, $message);
                 $tableString = getMessagesTable($id, $id2);
-                echo $tableString; 
+                echo $tableString;
                 break;
             case 'SearchUsers':
                 $searchTerm = $_POST['Term'];
                 $id = $_SESSION['UserId'];
                 $arrayOfSearchUsers = searchZenUsers($id, $searchTerm);
-                if (!empty($arrayOfSearchUsers)) {
+                if (!empty ($arrayOfSearchUsers)) {
                     $str = '';
                     foreach ($arrayOfSearchUsers as $zenUser) {
                         $str .= "<tr><td>$zenUser</td><td><button data-username=$zenUser class='addZenMate'>Add ZenMate</button></td></tr>";
@@ -213,10 +219,10 @@ else{
                 $id = $_SESSION['UserId'];
                 $searchUsername = $_POST['SearchTerm'];
                 $searchUsernameId = getUserId($searchUsername);
-                $result = addZenMate($id,$searchUsernameId);
+                $result = addZenMate($id, $searchUsernameId);
                 break;
-            }
         }
     }
+}
 
 ?>

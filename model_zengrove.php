@@ -3,7 +3,8 @@
 $conn = mysqli_connect('localhost', 'w3rrhythm', 'w3rrhythm136', 'C354_w3rrhythm');
 function areCredentialsValid($username, $password) { 
     global $conn;
-    $sql = "SELECT * FROM ZenGroveUsers WHERE Username = '$username' AND Password = '$password'";
+    $hashedPassword = hash('sha1', $password);
+    $sql = "SELECT * FROM ZenGroveUsers WHERE Username = '$username' AND Password = '$hashedPassword'";
     $result = mysqli_query($conn, $sql);
     if ($result && mysqli_num_rows($result) == 1)
         return true;
@@ -15,7 +16,8 @@ function insertUserIntoTable($user,$pass, $email){
     global $conn;
     $current_date = date("Ymd"); 
     $yesterday_date = date("Ymd", strtotime("-1 days"));
-    $sql = "INSERT INTO ZenGroveUsers(Username, Email, Password, Date, DateofLastMeditation)  VALUES ('$user', '$email', '$pass', '$current_date', '$yesterday_date')";
+    $hashedPassword = hash('sha1', $pass);
+    $sql = "INSERT INTO ZenGroveUsers(Username, Email, Password, Date, DateofLastMeditation)  VALUES ('$user', '$email', '$hashedPassword', '$current_date', '$yesterday_date')";
     $result = mysqli_query($conn, $sql);
     return $result;
 };
